@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Ёж Отель — Официальный сайт</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5; color: #1a1a1a; line-height: 1.45;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+        .header {
+            background: #111; color: #fff; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .header .container {
+            display: flex; align-items: center; justify-content: space-between;
+            height: 64px; flex-wrap: wrap;
+        }
+        .logo {
+            font-weight: 700; font-size: 1.3rem; color: #fff; text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .logo span { background: #e67e22; padding: 3px 10px; border-radius: 4px; color: #000; font-size: 0.8rem; font-weight: 600; }
+        .nav { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+        .nav a, .nav button {
+            color: #ccc; text-decoration: none; font-weight: 500; font-size: 0.9rem;
+            transition: 0.15s; letter-spacing: -0.2px; background: none; border: none;
+            cursor: pointer; font-family: inherit;
+        }
+        .nav a:hover, .nav button:hover { color: #fff; border-bottom: 2px solid #e67e22; }
+        .nav .btn-admin { background: #e67e22; color: #000; padding: 6px 16px; border-radius: 4px; font-weight: 700; }
+        .nav .btn-admin:hover { background: #f39c12; border-bottom: none; }
+        .page { display: none; padding: 40px 0; }
+        .page.active { display: block; }
+        .section-title {
+            font-size: 1.8rem; font-weight: 700; margin-bottom: 20px;
+            border-left: 5px solid #e67e22; padding-left: 16px; color: #111;
+        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+        .card {
+            background: #fff; border: 1.5px solid #e0e0e0; border-radius: 6px;
+            padding: 16px; transition: 0.15s; box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+            cursor: pointer;
+        }
+        .card:hover { border-color: #aaa; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .card.selected { border-color: #e67e22; background: #fff8f0; }
+        .tag {
+            display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 3px 8px;
+            border-radius: 3px; margin-top: 6px; letter-spacing: 0.3px;
+        }
+        .tag.econom { background: #ecf0f1; color: #2c3e50; }
+        .tag.standard { background: #d5e8d4; color: #2e7d32; }
+        .tag.vip { background: #1a1a1a; color: #f1c40f; }
+        .tag.president { background: #b8860b; color: #fff; }
+        .status { font-weight: 700; font-size: 0.75rem; margin-top: 6px; }
+        .status.free { color: #27ae60; }
+        .status.occupied { color: #c0392b; }
+        .status.repair { color: #2980b9; }
+        .btn {
+            display: inline-block; padding: 10px 24px; border-radius: 5px; font-weight: 600;
+            font-size: 0.9rem; cursor: pointer; border: none; transition: 0.15s;
+            letter-spacing: -0.2px; text-decoration: none; background: #e67e22; color: #000;
+        }
+        .btn:hover { background: #f39c12; }
+        .btn-outline {
+            background: transparent; border: 1.5px solid #1a1a1a; color: #1a1a1a;
+        }
+        .btn-outline:hover { background: #1a1a1a; color: #fff; }
+        .btn-small { padding: 6px 14px; font-size: 0.8rem; }
+        .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
+        .form-group label {
+            font-weight: 600; font-size: 0.75rem; text-transform: uppercase;
+            letter-spacing: 0.4px; margin-bottom: 4px; color: #555;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 10px 12px; border: 1.5px solid #d0d0d0; border-radius: 4px;
+            font-size: 0.9rem; font-family: 'Inter', sans-serif; background: #fff; transition: 0.15s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #e67e22; outline: none; box-shadow: 0 0 0 2px rgba(230,126,34,0.15);
+        }
+        .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
+        .form-row .form-group { flex: 1 1 150px; }
+        .total-box {
+            background: #1a1a1a; color: #fff; padding: 16px; border-radius: 5px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-weight: 700; font-size: 1rem; margin-top: 12px;
+        }
+        .total-box .price { font-size: 1.4rem; }
+        .highlight {
+            background: #fff3e0; border-left: 4px solid #e67e22; padding: 16px;
+            border-radius: 0 6px 6px 0; margin-bottom: 20px;
+        }
+        .star-rating { direction: rtl; display: inline-flex; }
+        .star-rating input { display: none; }
+        .star-rating label { font-size: 1.8rem; color: #ccc; cursor: pointer; }
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label { color: #f1c40f; }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55); z-index: 200; display: flex;
+            align-items: center; justify-content: center; visibility: hidden; opacity: 0;
+            transition: 0.2s;
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal {
+            background: #fff; border-radius: 8px; padding: 28px; max-width: 550px;
+            width: 90%; box-shadow: 0 24px 48px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;
+        }
+        .modal h2 { margin-bottom: 16px; font-size: 1.4rem; }
+        .modal .close-modal {
+            float: right; background: none; border: none; font-size: 1.8rem;
+            cursor: pointer; font-weight: 600; line-height: 1; color: #555;
+        }
+        .admin-panel { background: #1e1e1e; color: #eee; padding: 20px; border-radius: 8px; }
+        hr { border: 0.5px solid #e0e0e0; margin: 20px 0; }
+        img.review-img { max-width: 120px; max-height: 120px; margin-top: 8px; border-radius: 4px; }
+        @media (max-width: 768px) {
+            .nav { gap: 8px; }
+            .header .container { height: auto; padding: 12px 0; }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="container">
+        <a href="#" class="logo" id="homeLink">Ёж Отель <span>HEDGEHOG</span></a>
+        <nav class="nav">
+            <a href="#" data-page="home">Главная</a>
+            <a href="#" data-page="rooms">Номера</a>
+            <a href="#" data-page="restaurant">Ресторан</a>
+            <a href="#" data-page="sport">Спорт</a>
+            <a href="#" data-page="pool">Бассейн</a>
+            <a href="#" data-page="reviews">Отзывы</a>
+            <a href="#" data-page="complaint">Жалоба</a>
+            <button class="btn-admin" id="adminNavBtn">Администратор</button>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <!-- Главная -->
+    <section id="page-home" class="page active">
+        <div style="display:flex; gap:32px; flex-wrap:wrap;">
+            <div style="flex:2; min-width:280px;">
+                <h1 style="font-size:2.5rem; font-weight:700;">Ёж Отель</h1>
+                <p style="font-size:1.2rem; color:#555;">Деловой отель для ежей с разумом. Подземная парковка (80 мест), уличная (40 мест). Бассейн на крыше, ресторан, спорт-зоны.</p>
+                <p style="margin-top:16px;"><strong>📍</strong> 12 игольчатая улица, Ежиный город</p>
+                <p><strong>🅿️</strong> Парковка: 500 Đ/день</p>
+                <p><strong>💎</strong> Быть шестисотым — высший статус.</p>
+            </div>
+            <div style="flex:1; background:#fff; padding:24px; border-radius:8px; border:1px solid #e0e0e0;">
+                <h3>Быстрое бронирование</h3>
+                <button class="btn" id="quickBookBtn" style="margin-top:12px; width:100%;">Подобрать номер</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Номера (полное бронирование) -->
+    <section id="page-rooms" class="page">
+        <h2 class="section-title">Номера и бронирование</h2>
+        <div class="highlight">
+            <strong>Категории:</strong> Эконом – короткое проживание, ночлег. Стандарт – туристы, временное жильё. VIP – роскошь. Президентский люкс – для важных лиц (быть шестисотым).
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;" id="floorSelector">
+            <button class="btn btn-outline btn-small active" data-floor="1">1 этаж</button>
+            <button class="btn btn-outline btn-small" data-floor="2">2 этаж</button>
+            <button class="btn btn-outline btn-small" data-floor="3">3 этаж</button>
+            <button class="btn btn-outline btn-small" data-floor="4">4 этаж</button>
+            <button class="btn btn-outline btn-small" data-floor="5">5 этаж</button>
+            <button class="btn btn-outline btn-small" data-floor="6">6 этаж 🔝</button>
+        </div>
+        <div id="roomsGrid" class="grid"></div>
+        <p id="floorInfo" style="font-size:0.85rem; color:#666; margin-top:8px;"></p>
+        <div class="form-row" style="margin-top:24px; background:#fff; padding:20px; border-radius:6px; border:1px solid #e0e0e0;">
+            <div class="form-group"><label>Заезд (макс. +7 дн.)</label><input type="date" id="checkinDate"></div>
+            <div class="form-group"><label>Выезд (макс. 30 ночей)</label><input type="date" id="checkoutDate"></div>
+            <div class="form-group"><label>Гостей</label><select id="guestCount"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
+        </div>
+        <div class="total-box"><span>Сумма (дюры)</span><span class="price" id="totalPrice">0 Đ</span></div>
+        <button class="btn" id="confirmBookingBtn" style="margin-top:12px;">Забронировать выбранный номер</button>
+        <p style="font-size:0.8rem; color:#888; margin-top:8px;">Максимальный срок проживания — 30 дней. Для продления необходимо новое бронирование.</p>
+    </section>
+
+    <!-- Ресторан -->
+    <section id="page-restaurant" class="page">
+        <h2 class="section-title">Ресторан (1 этаж)</h2>
+        <div class="grid" id="menuGrid"></div>
+        <h3 style="margin-top:24px;">Предзаказ блюд</h3>
+        <div class="form-row">
+            <div class="form-group"><label>Блюдо</label><select id="dishSelect"></select></div>
+            <div class="form-group"><label>Количество</label><input type="number" id="dishQty" value="1" min="1" max="10"></div>
+        </div>
+        <button class="btn btn-small" id="orderDishBtn">Добавить в предзаказ</button>
+        <div id="preorderList" style="margin-top:12px; font-size:0.9rem;"></div>
+    </section>
+
+    <!-- Спорт -->
+    <section id="page-sport" class="page">
+        <h2 class="section-title">Спорт и игровые зоны</h2>
+        <div class="grid" id="sportCards"></div>
+        <div class="highlight" style="margin-top:20px;">
+            <strong>АКЦИЯ:</strong> При заказе от 2 часов — второй час со скидкой 20%. Максимальная продолжительность — 8 часов. 30 минут = половина стоимости часа.
+        </div>
+        <div class="form-row" style="margin-top:16px;">
+            <div class="form-group"><label>Зона</label><select id="sportZone"></select></div>
+            <div class="form-group"><label>Часы (0-8)</label><input type="number" id="sportHours" value="1" min="0" max="8"></div>
+            <div class="form-group"><label>Минуты</label><select id="sportMinutes"><option value="0">0</option><option value="30">30</option></select></div>
+        </div>
+        <button class="btn btn-small" id="calcSportBtn">Рассчитать стоимость</button>
+        <div id="sportTotal" style="margin-top:12px; font-weight:700;"></div>
+    </section>
+
+    <!-- Бассейн -->
+    <section id="page-pool" class="page">
+        <h2 class="section-title">Бассейн на крыше</h2>
+        <div class="card" style="max-width:400px;">
+            <p><strong>📍 Местоположение:</strong> Крыша (6 этаж)</p>
+            <p><strong>🕗 Время работы:</strong> 8:00 – 23:00</p>
+            <p><strong>🌡️ Температура воды:</strong> 26°C – 30°C (подогрев)</p>
+            <p>Вход свободный для гостей отеля.</p>
+        </div>
+    </section>
+
+    <!-- Отзывы -->
+    <section id="page-reviews" class="page">
+        <h2 class="section-title">Оценка и отзывы</h2>
+        <div class="form-row">
+            <div class="form-group" style="flex:1;"><label>Ваше имя</label><input type="text" id="reviewName" placeholder="Имя ежа"></div>
+            <div class="form-group" style="flex:1;">
+                <label>Оценка</label>
+                <div class="star-rating" id="starRating">
+                    <input type="radio" name="stars" id="star5" value="5"><label for="star5">★</label>
+                    <input type="radio" name="stars" id="star4" value="4"><label for="star4">★</label>
+                    <input type="radio" name="stars" id="star3" value="3"><label for="star3">★</label>
+                    <input type="radio" name="stars" id="star2" value="2"><label for="star2">★</label>
+                    <input type="radio" name="stars" id="star1" value="1"><label for="star1">★</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group"><label>Комментарий</label><textarea id="reviewText" rows="3"></textarea></div>
+        <div class="form-group"><label>Изображение (необязательно)</label><input type="file" id="reviewImage" accept="image/*"></div>
+        <button class="btn" id="submitReviewBtn">Оставить отзыв</button>
+        <div id="reviewsList" style="margin-top:24px;"></div>
+    </section>
+
+    <!-- Жалоба -->
+    <section id="page-complaint" class="page">
+        <h2 class="section-title">Жалоба на обслуживание</h2>
+        <div class="form-group"><label>Номер комнаты</label><input type="text" id="complaintRoom" placeholder="например, 312"></div>
+        <div class="form-group"><label>Степень серьёзности</label><select id="complaintSeverity">
+            <option value="20">Лёгкая (20%)</option><option value="30" selected>Средняя (30%)</option><option value="40">Серьёзная (40%)</option><option value="50">Крайне серьёзная (50%)</option>
+        </select></div>
+        <div class="form-group"><label>Описание проблемы</label><textarea id="complaintText" rows="3"></textarea></div>
+        <button class="btn" id="submitComplaintBtn">Отправить жалобу</button>
+        <p style="font-size:0.85rem; margin-top:8px;">При подтверждении администратором выплачивается компенсация (20–50% от стоимости номера).</p>
+    </section>
+</main>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modalBox">
+        <button class="close-modal" id="closeModalBtn">&times;</button>
+        <div id="modalContent"></div>
+    </div>
+</div>
+
+<footer style="background:#111; color:#aaa; text-align:center; padding:20px; font-size:0.8rem; margin-top:40px;">
+    Ёж Отель, 12 игольчатая улица. Все цены в дюрах (Đ). 5 Đ ≈ 1 RUB.
+</footer>
+
+<script>
+(function() {
+    // Данные номеров
+    const floorData = {
+        1: { rooms: [
+            {num:'101',cat:'econom',price:4500},{num:'102',cat:'econom',price:4500},{num:'103',cat:'econom',price:4500},
+            {num:'111',cat:'standard',price:9000},{num:'112',cat:'standard',price:9000},{num:'113',cat:'standard',price:9000}
+        ], info:'1 этаж: ресторан, стойка регистрации' },
+        2: { rooms: [
+            {num:'201',cat:'econom',price:4800},{num:'202',cat:'econom',price:4800},{num:'203',cat:'econom',price:4800},
+            {num:'204',cat:'econom',price:4800},{num:'205',cat:'econom',price:4800},{num:'206',cat:'econom',price:4800},
+            {num:'211',cat:'standard',price:9500},{num:'212',cat:'standard',price:9500},{num:'213',cat:'standard',price:9500},
+            {num:'214',cat:'standard',price:9500},{num:'215',cat:'standard',price:9500},{num:'216',cat:'standard',price:9500},
+            {num:'221',cat:'vip',price:24000},{num:'222',cat:'vip',price:24000},{num:'223',cat:'vip',price:24000}
+        ], info:'2 этаж: спорт-зона' },
+        3: { rooms: [
+            {num:'301',cat:'econom',price:5000},{num:'302',cat:'econom',price:5000},{num:'303',cat:'econom',price:5000},
+            {num:'311',cat:'standard',price:10000},{num:'312',cat:'standard',price:10000},{num:'313',cat:'standard',price:10000},
+            {num:'314',cat:'standard',price:10000},{num:'315',cat:'standard',price:10000},{num:'316',cat:'standard',price:10000},
+            {num:'321',cat:'vip',price:26000},{num:'322',cat:'vip',price:26000},{num:'323',cat:'vip',price:26000},
+            {num:'324',cat:'vip',price:26000},{num:'325',cat:'vip',price:26000},{num:'326',cat:'vip',price:26000}
+        ], info:'3 этаж: игровая зона' },
+        4: { rooms: [
+            {num:'401',cat:'econom',price:5200},{num:'402',cat:'econom',price:5200},{num:'403',cat:'econom',price:5200},
+            {num:'404',cat:'econom',price:5200},{num:'405',cat:'econom',price:5200},{num:'406',cat:'econom',price:5200},
+            {num:'411',cat:'standard',price:10500},{num:'412',cat:'standard',price:10500},{num:'413',cat:'standard',price:10500},
+            {num:'421',cat:'vip',price:28000},{num:'422',cat:'vip',price:28000},{num:'423',cat:'vip',price:28000},
+            {num:'424',cat:'vip',price:28000},{num:'425',cat:'vip',price:28000},{num:'426',cat:'vip',price:28000}
+        ], info:'4 этаж: магазины' },
+        5: { rooms: [
+            {num:'501',cat:'econom',price:5500},{num:'502',cat:'econom',price:5500},{num:'503',cat:'econom',price:5500},
+            {num:'504',cat:'econom',price:5500},{num:'505',cat:'econom',price:5500},{num:'506',cat:'econom',price:5500},
+            {num:'511',cat:'standard',price:11000},{num:'512',cat:'standard',price:11000},{num:'513',cat:'standard',price:11000},
+            {num:'514',cat:'standard',price:11000},{num:'515',cat:'standard',price:11000},{num:'516',cat:'standard',price:11000},
+            {num:'521',cat:'vip',price:30000},{num:'522',cat:'vip',price:30000},{num:'523',cat:'vip',price:30000},
+            {num:'524',cat:'vip',price:30000},{num:'525',cat:'vip',price:30000},{num:'526',cat:'vip',price:30000}
+        ], info:'5 этаж' },
+        6: { rooms: [
+            {num:'631',cat:'president',price:95000},{num:'632',cat:'president',price:98000},
+            {num:'633',cat:'president',price:105000},{num:'634',cat:'president',price:120000}
+        ], info:'6 этаж: Президентский люкс. Быть шестисотым — высший статус.' }
+    };
+
+    let roomStatus = {};
+    for (let f in floorData) floorData[f].rooms.forEach(r => roomStatus[r.num] = 'free');
+
+    let selectedRoom = null;
+    let currentFloor = 1;
+    let reviews = [];
+    let complaints = [];
+    const preorder = [];
+
+    // Меню ресторана (>20 блюд)
+    const menu = [
+        {name:'Грибной крем-суп', price:1100}, {name:'Тыквенный суп-пюре', price:950},
+        {name:'Ореховое ассорти', price:700}, {name:'Жареные корнеплоды', price:850},
+        {name:'Печёные яблоки с мёдом', price:650}, {name:'Ягодный микс', price:900},
+        {name:'Каша из пшена с тыквой', price:550}, {name:'Овощное рагу', price:1000},
+        {name:'Пирог с черникой', price:750}, {name:'Сырная тарелка', price:1200},
+        {name:'Морковные котлеты', price:600}, {name:'Кабачковые оладьи', price:550},
+        {name:'Фруктовый салат', price:800}, {name:'Кисель из лесных ягод', price:400},
+        {name:'Травяной чай', price:300}, {name:'Яблочный компот', price:350},
+        {name:'Морс клюквенный', price:450}, {name:'Овсяное печенье', price:250},
+        {name:'Медовые кексы', price:500}, {name:'Блины с джемом', price:700},
+        {name:'Гречневая каша с грибами', price:850}, {name:'Запечённые овощи', price:950}
+    ];
+
+    // Спорт зоны
+    const sportZones = [
+        {id:'workout', name:'Воркаут-зона', pricePerHour:600},
+        {id:'gym', name:'Тренажёрный зал', pricePerHour:800},
+        {id:'martial', name:'Боевые искусства', pricePerHour:1000},
+        {id:'games', name:'Игровая (футбол/баскетбол)', pricePerHour:900},
+        {id:'tabletennis', name:'Настольный теннис', pricePerHour:400},
+        {id:'billiard', name:'Бильярд', pricePerHour:700}
+    ];
+
+    // --- Навигация ---
+    const pages = document.querySelectorAll('.page');
+    const navLinks = document.querySelectorAll('[data-page]');
+    function showPage(pageId) {
+        pages.forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + pageId).classList.add('active');
+    }
+    navLinks.forEach(link => link.addEventListener('click', function(e) {
+        e.preventDefault();
+        showPage(this.dataset.page);
+    }));
+    document.getElementById('homeLink').addEventListener('click', (e) => { e.preventDefault(); showPage('home'); });
+
+    // --- Модалка ---
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalContent = document.getElementById('modalContent');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    function showModal(title, html) {
+        modalContent.innerHTML = `<h2>${title}</h2>${html}<button class="btn" style="margin-top:16px;" id="innerCloseBtn">Закрыть</button>`;
+        modalOverlay.classList.add('active');
+        document.getElementById('innerCloseBtn').addEventListener('click', ()=> modalOverlay.classList.remove('active'));
+    }
+    closeModalBtn.addEventListener('click', ()=> modalOverlay.classList.remove('active'));
+    modalOverlay.addEventListener('click', e => { if(e.target===modalOverlay) modalOverlay.classList.remove('active'); });
+
+    // --- Бронирование ---
+    function formatPrice(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' Đ'; }
+    function getNights() {
+        const ci = new Date(document.getElementById('checkinDate').value);
+        const co = new Date(document.getElementById('checkoutDate').value);
+        if (isNaN(ci) || isNaN(co)) return 0;
+        const diff = Math.ceil((co - ci) / 86400000);
+        return diff > 0 ? diff : 0;
+    }
+    function updateTotal() {
+        if (!selectedRoom) { document.getElementById('totalPrice').textContent = '0 Đ'; return; }
+        const nights = getNights();
+        if (nights > 30) { document.getElementById('totalPrice').textContent = 'Ошибка: макс. 30 ночей'; return; }
+        document.getElementById('totalPrice').textContent = formatPrice(selectedRoom.price * nights);
+    }
+    function renderRooms(floor) {
+        const data = floorData[floor];
+        if (!data) return;
+        const grid = document.getElementById('roomsGrid');
+        grid.innerHTML = '';
+        data.rooms.forEach(room => {
+            const status = roomStatus[room.num] || 'free';
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.dataset.room = room.num;
+            div.innerHTML = `
+                <strong>№${room.num}</strong><br><span>${formatPrice(room.price)}/ночь</span>
+                <span class="tag ${room.cat}">${
+                    room.cat==='econom'?'Эконом':room.cat==='standard'?'Стандарт':room.cat==='vip'?'VIP':'Президентский'
+                }</span>
+                <div class="status ${status}">${
+                    status==='free'?'Свободна':status==='occupied'?'Занята':'Ремонт'
+                }</div>`;
+            div.addEventListener('click', ()=>{
+                if (status !== 'free') { alert('Номер недоступен.'); return; }
+                document.querySelectorAll('#roomsGrid .card').forEach(c=>c.classList.remove('selected'));
+                div.classList.add('selected');
+                selectedRoom = room;
+                updateTotal();
+            });
+            grid.appendChild(div);
+        });
+        document.getElementById('floorInfo').textContent = data.info || '';
+    }
+
+    const checkinDate = document.getElementById('checkinDate');
+    const checkoutDate = document.getElementById('checkoutDate');
+    function setDateLimits() {
+        const today = new Date();
+        const maxCheckin = new Date(today); maxCheckin.setDate(today.getDate()+7);
+        const fmt = d => d.toISOString().split('T')[0];
+        checkinDate.min = fmt(today); checkinDate.max = fmt(maxCheckin);
+        if (!checkinDate.value) checkinDate.value = fmt(today);
+        checkoutDate.min = checkinDate.value;
+        if (!checkoutDate.value) {
+            let def = new Date(today); def.setDate(def.getDate()+1);
+            checkoutDate.value = fmt(def);
+        }
+    }
+    setDateLimits();
+    checkinDate.addEventListener('change', ()=>{
+        checkoutDate.min = checkinDate.value;
+        if (checkoutDate.value < checkinDate.value) checkoutDate.value = checkinDate.value;
+        updateTotal();
+    });
+    checkoutDate.addEventListener('change', updateTotal);
+
+    document.querySelectorAll('#floorSelector button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#floorSelector button').forEach(b=>b.classList.remove('active'));
+            this.classList.add('active');
+            currentFloor = parseInt(this.dataset.floor);
+            renderRooms(currentFloor);
+            selectedRoom = null; updateTotal();
+        });
+    });
+
+    document.getElementById('confirmBookingBtn').addEventListener('click', ()=>{
+        if (!selectedRoom) { alert('Выберите номер.'); return; }
+        const nights = getNights();
+        if (nights<=0 || nights>30) { alert('Некорректное количество ночей (макс. 30).'); return; }
+        if (roomStatus[selectedRoom.num]!=='free') { alert('Номер недоступен.'); return; }
+        const name = prompt('Имя гостя:') || 'Гость';
+        showModal('Бронь подтверждена', `
+            <p>Номер: №${selectedRoom.num} (${selectedRoom.cat})</p>
+            <p>Даты: ${checkinDate.value} – ${checkoutDate.value} (${nights} ноч.)</p>
+            <p>Сумма: ${formatPrice(selectedRoom.price * nights)}</p><p>Гость: ${name}</p>`);
+        roomStatus[selectedRoom.num] = 'occupied';
+        renderRooms(currentFloor);
+        selectedRoom = null; updateTotal();
+    });
+    renderRooms(1);
+
+    // --- Быстрое бронирование ---
+    document.getElementById('quickBookBtn').addEventListener('click', ()=>{
+        let html = `<h2>Быстрый подбор номера</h2>
+            <div class="form-group"><label>Класс (обязательно)</label>
+                <select id="quickClass"><option value="econom">Эконом</option><option value="standard" selected>Стандарт</option><option value="vip">VIP</option><option value="president">Президентский</option></select>
+            </div>
+            <div class="form-group"><label>Этаж (необязательно)</label>
+                <select id="quickFloor"><option value="">Не важно</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select>
+            </div>
+            <button class="btn" id="searchQuickBtn">Искать</button>
+            <div id="quickResult" style="margin-top:16px;"></div>`;
+        showModal('Быстрое бронирование', html);
+        document.getElementById('searchQuickBtn').addEventListener('click', ()=>{
+            const cls = document.getElementById('quickClass').value;
+            const floorVal = document.getElementById('quickFloor').value;
+            const candidates = [];
+            for (let f=1; f<=6; f++) {
+                if (floorVal && f !== parseInt(floorVal)) continue;
+                const rooms = floorData[f].rooms.filter(r => r.cat===cls && roomStatus[r.num]==='free');
+                candidates.push(...rooms.map(r => ({...r, floor: f})));
+            }
+            const resultDiv = document.getElementById('quickResult');
+            if (candidates.length===0) {
+                resultDiv.innerHTML = '<p style="color:red;">Нет свободных номеров данного класса.</p>';
+                return;
+            }
+            const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+            resultDiv.innerHTML = `
+                <div class="card"><strong>№${chosen.num}</strong> (${chosen.cat})<br>Этаж ${chosen.floor}<br>Цена: ${formatPrice(chosen.price)}/ночь</div>
+                <div class="form-row" style="margin-top:12px;">
+                    <div class="form-group"><label>Заезд</label><input type="date" id="quickCheckin" value="${checkinDate.value}"></div>
+                    <div class="form-group"><label>Выезд</label><input type="date" id="quickCheckout" value="${checkoutDate.value}"></div>
+                </div>
+                <button class="btn" id="confirmQuickBookBtn">Забронировать</button>`;
+            const qci = document.getElementById('quickCheckin');
+            const qco = document.getElementById('quickCheckout');
+            qci.min = checkinDate.min; qci.max = checkinDate.max;
+            qco.min = qci.value;
+            qci.addEventListener('change', ()=>{ qco.min = qci.value; });
+            document.getElementById('confirmQuickBookBtn').addEventListener('click', ()=>{
+                const nights = Math.ceil((new Date(qco.value) - new Date(qci.value))/86400000);
+                if (nights<=0 || nights>30) { alert('Некорректные даты.'); return; }
+                const name = prompt('Имя гостя:') || 'Гость';
+                showModal('Бронь подтверждена', `<p>Номер: №${chosen.num} (${chosen.cat})</p><p>Даты: ${qci.value} – ${qco.value} (${nights} ноч.)</p><p>Сумма: ${formatPrice(chosen.price * nights)}</p>`);
+                roomStatus[chosen.num] = 'occupied';
+                renderRooms(currentFloor);
+                modalOverlay.classList.remove('active');
+            });
+        });
+    });
+
+    // --- Ресторан ---
+    function renderMenu() {
+        const menuGrid = document.getElementById('menuGrid');
+        menuGrid.innerHTML = menu.map(m=>`<div class="card"><strong>${m.name}</strong><br>${formatPrice(m.price)}</div>`).join('');
+        const select = document.getElementById('dishSelect');
+        select.innerHTML = menu.map(m=>`<option>${m.name}</option>`).join('');
+    }
+    renderMenu();
+    document.getElementById('orderDishBtn').addEventListener('click', ()=>{
+        const dish = document.getElementById('dishSelect').value;
+        const qty = parseInt(document.getElementById('dishQty').value)||1;
+        preorder.push({dish, qty});
+        const list = document.getElementById('preorderList');
+        list.innerHTML = preorder.map((p,i)=>`<div>${p.dish} x${p.qty} <button class="btn-small" onclick="this.parentElement.remove()">удалить</button></div>`).join('');
+    });
+
+    // --- Спорт ---
+    function renderSportCards() {
+        const grid = document.getElementById('sportCards');
+        grid.innerHTML = sportZones.map(z=>`<div class="card"><strong>${z.name}</strong><br>1 час: ${formatPrice(z.pricePerHour)}<br>30 мин: ${formatPrice(Math.round(z.pricePerHour/2))}</div>`).join('');
+        const select = document.getElementById('sportZone');
+        select.innerHTML = sportZones.map(z=>`<option value="${z.id}">${z.name} (${z.pricePerHour} Đ/час)</option>`).join('');
+    }
+    renderSportCards();
+    document.getElementById('calcSportBtn').addEventListener('click', ()=>{
+        const zoneId = document.getElementById('sportZone').value;
+        const hours = parseInt(document.getElementById('sportHours').value)||0;
+        const minutes = parseInt(document.getElementById('sportMinutes').value)||0;
+        const totalMinutes = hours*60 + minutes;
+        if (totalMinutes > 480) { alert('Максимум 8 часов (480 минут).'); return; }
+        const zone = sportZones.find(z=>z.id===zoneId);
+        const basePerMin = zone.pricePerHour / 60;
+        let total = 0;
+        // Разбиваем на полные часы и остаток
+        let fullHours = Math.floor(totalMinutes / 60);
+        let remaining = totalMinutes % 60;
+        for (let i = 1; i <= fullHours; i++) {
+            if (i === 2) total += zone.pricePerHour * 0.8;  // второй час со скидкой 20%
+            else total += zone.pricePerHour;
+        }
+        if (remaining > 0) {
+            // остаток минут, неполный час
+            if (fullHours >= 2) {
+                // если уже есть два часа, остаток считается по полной цене
+                total += basePerMin * remaining;
+            } else if (fullHours === 1) {
+                // первый час уже добавлен, остаток менее 60 мин — это часть второго часа, но не целый час, поэтому без скидки
+                total += basePerMin * remaining;
+            } else {
+                // меньше часа
+                total += basePerMin * remaining;
+            }
+        }
+        document.getElementById('sportTotal').innerHTML = `Стоимость: <strong>${formatPrice(Math.round(total))}</strong>`;
+    });
+
+    // --- Отзывы ---
+    function renderReviews() {
+        const list = document.getElementById('reviewsList');
+        list.innerHTML = reviews.map(r=>{
+            let imgHtml = r.imageUrl ? `<br><img src="${r.imageUrl}" class="review-img" alt="фото">` : '';
+            return `<div class="card"><strong>${r.name}</strong> (${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)})<br>${r.text}${imgHtml}</div>`;
+        }).join('');
+    }
+    document.getElementById('submitReviewBtn').addEventListener('click', ()=>{
+        const name = document.getElementById('reviewName').value.trim();
+        const stars = document.querySelector('input[name="stars"]:checked')?.value || '0';
+        const text = document.getElementById('reviewText').value.trim();
+        const fileInput = document.getElementById('reviewImage');
+        if (!name || stars==='0' || !text) { alert('Заполните имя, оценку и комментарий.'); return; }
+        const file = fileInput.files[0];
+        const review = {name, stars:parseInt(stars), text, imageUrl: null};
+        if (file) {
+            const url = URL.createObjectURL(file);
+            review.imageUrl = url;
+        }
+        reviews.push(review);
+        renderReviews();
+        document.getElementById('reviewName').value = '';
+        document.getElementById('reviewText').value = '';
+        const checkedStar = document.querySelector('input[name="stars"]:checked');
+        if (checkedStar) checkedStar.checked = false;
+        fileInput.value = '';
+    });
+
+    // --- Жалоба ---
+    document.getElementById('submitComplaintBtn').addEventListener('click', ()=>{
+        const room = document.getElementById('complaintRoom').value.trim();
+        const severity = parseInt(document.getElementById('complaintSeverity').value);
+        const text = document.getElementById('complaintText').value.trim();
+        if (!room || !text) { alert('Укажите номер комнаты и описание.'); return; }
+        complaints.push({room, severity, text});
+        showModal('Жалоба отправлена', `<p>При подтверждении администратором возможна компенсация до ${severity}% от стоимости номера.</p>`);
+        document.getElementById('complaintRoom').value = '';
+        document.getElementById('complaintText').value = '';
+    });
+
+    // --- Администратор ---
+    document.getElementById('adminNavBtn').addEventListener('click', ()=>{
+        const pw1 = prompt('Введите первый пароль:');
+        if (pw1 !== 'M9pi4GO8') { alert('Неверный первый пароль.'); return; }
+        const pw2 = prompt('Введите второй пароль:');
+        if (pw2 !== '14FbOm5s') { alert('Неверный второй пароль.'); return; }
+        if (!confirm('Я согласен передавать данные разработчикам и работникам отеля.\nНажмите "ОК" для подтверждения.')) return;
+        if (!confirm('Я согласен нести полную ответственность и не уклоняться от обязанностей.\nНажмите "ОК" для подтверждения.')) return;
+        if (!confirm('Я обязуюсь не вносить заведомо ложную информацию и соблюдать установленные правила.\nНажмите "ОК" для подтверждения.')) return;
+        showAdminPanel();
+    });
+
+    function showAdminPanel() {
+        let html = `<h2>Панель администратора</h2>
+            <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+                <button class="btn btn-small" id="adminReviewsBtn">Отзывы</button>
+                <button class="btn btn-small" id="adminComplaintsBtn">Жалобы</button>
+                <button class="btn btn-small" id="adminEditBtn">Цены и статусы</button>
+            </div><div id="adminContentArea"></div>`;
+        showModal('Администратор', html);
+
+        document.getElementById('adminReviewsBtn').addEventListener('click', ()=>{
+            const area = document.getElementById('adminContentArea');
+            area.innerHTML = '<h4>Отзывы</h4>';
+            if (reviews.length===0) area.innerHTML += '<p>Нет отзывов.</p>';
+            else {
+                reviews.forEach((r,idx) => {
+                    let imgHtml = r.imageUrl ? `<br><img src="${r.imageUrl}" class="review-img">` : '';
+                    area.innerHTML += `<div class="card" style="margin-bottom:8px;"><strong>${r.name}</strong> (${r.stars}★) ${r.text}${imgHtml}
+                    <br><button class="btn-small" data-idx="${idx}" class="replyBtn">Ответить</button>
+                    <span class="adminReply" id="reply_${idx}"></span></div>`;
+                });
+                document.querySelectorAll('.replyBtn').forEach(btn => {
+                    btn.addEventListener('click', function(){
+                        const idx = this.dataset.idx;
+                        const reply = prompt('Введите ответ на отзыв:');
+                        if (reply) {
+                            document.getElementById('reply_'+idx).innerText = ' Ответ админа: ' + reply;
+                        }
+                    });
+                });
+            }
+        });
+
+        document.getElementById('adminComplaintsBtn').addEventListener('click', ()=>{
+            const area = document.getElementById('adminContentArea');
+            area.innerHTML = '<h4>Жалобы</h4>';
+            if (complaints.length===0) area.innerHTML += '<p>Жалоб нет.</p>';
+            else {
+                complaints.forEach((c,idx) => {
+                    area.innerHTML += `<div class="card" style="margin-bottom:8px;">Комната ${c.room}, серьёзность ${c.severity}%: ${c.text}
+                    <br><button class="btn-small" data-idx="${idx}" class="payBtn">Оплатить</button>
+                    <button class="btn-small" data-idx="${idx}" class="ignoreBtn">Проигнорировать</button></div>`;
+                });
+                document.querySelectorAll('.payBtn').forEach(btn => {
+                    btn.addEventListener('click', function(){
+                        const idx = this.dataset.idx;
+                        const c = complaints[idx];
+                        alert(`Жалоба по комнате ${c.room} оплачена. Компенсация ${c.severity}% от стоимости номера.`);
+                        complaints.splice(idx,1);
+                        document.getElementById('adminComplaintsBtn').click();
+                    });
+                });
+                document.querySelectorAll('.ignoreBtn').forEach(btn => {
+                    btn.addEventListener('click', function(){
+                        const idx = this.dataset.idx;
+                        complaints.splice(idx,1);
+                        document.getElementById('adminComplaintsBtn').click();
+                    });
+                });
+            }
+        });
+
+        document.getElementById('adminEditBtn').addEventListener('click', ()=>{
+            const area = document.getElementById('adminContentArea');
+            area.innerHTML = `<h4>Редактирование комнаты</h4>
+                <div class="form-group"><label>Номер комнаты</label><input type="text" id="roomNumInput" placeholder="например, 313"></div>
+                <button class="btn btn-small" id="findRoomBtn">Найти</button>
+                <div id="roomEditForm" style="margin-top:16px;"></div>`;
+            document.getElementById('findRoomBtn').addEventListener('click', ()=>{
+                const num = document.getElementById('roomNumInput').value.trim();
+                let room = null;
+                for (let f in floorData) {
+                    room = floorData[f].rooms.find(r => r.num === num);
+                    if (room) { room.floor = f; break; }
+                }
+                const formDiv = document.getElementById('roomEditForm');
+                if (!room) { formDiv.innerHTML = '<p style="color:red;">Комната не найдена.</p>'; return; }
+                const status = roomStatus[room.num];
+                formDiv.innerHTML = `
+                    <p><strong>Номер:</strong> ${room.num} | <strong>Категория:</strong> ${room.cat} | <strong>Этаж:</strong> ${room.floor}</p>
+                    <div class="form-row">
+                        <div class="form-group"><label>Цена (Đ)</label><input type="number" id="editPrice" value="${room.price}"></div>
+                        <div class="form-group"><label>Статус</label><select id="editStatus">
+                            <option value="free" ${status==='free'?'selected':''}>Свободно</option>
+                            <option value="occupied" ${status==='occupied'?'selected':''}>Занято</option>
+                            <option value="repair" ${status==='repair'?'selected':''}>Ремонт</option>
+                        </select></div>
+                    </div>
+                    <button class="btn btn-small" id="saveRoomBtn">Сохранить</button>`;
+                document.getElementById('saveRoomBtn').addEventListener('click', ()=>{
+                    const newPrice = parseInt(document.getElementById('editPrice').value);
+                    const newStatus = document.getElementById('editStatus').value;
+                    if (!isNaN(newPrice) && newPrice>=0) room.price = newPrice;
+                    roomStatus[room.num] = newStatus;
+                    renderRooms(currentFloor);
+                    alert('Изменения сохранены.');
+                    document.getElementById('adminEditBtn').click();
+                });
+            });
+        });
+        document.getElementById('adminReviewsBtn').click();
+    }
+
+    showPage('home');
+})();
+</script>
+</body>
+  </html>
